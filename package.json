@@ -1,0 +1,19 @@
+{
+  "name": "comp3000project",
+  "version": "1.0.0",
+  "description": "Blockchain File Storage",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network mumbai"
+  },
+  "author": "CJ Blain",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.22.10"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
