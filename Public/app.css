@@ -1,67 +1,71 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  height: 100vh;
-  background: linear-gradient(135deg, #0052CC, #00D4FF);
-  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  background: #003087;
+  font-family: 'Segoe UI', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
 }
 
-.container {
+
+.corner {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: #00D4FF;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.top-left    { top: 0; left: 0; background: #00D4FF; }
+.top-right   { top: 0; right: 0; background: #FFD700; transform: rotate(90deg); }
+.bottom-left { bottom: 0; left: 0; background: #FFD700; transform: rotate(-90deg); }
+.bottom-right{ bottom: 0; right: 0; background: #00D4FF; transform: rotate(180deg); }
+
+
+.card {
   background: white;
   padding: 60px 50px;
   border-radius: 24px;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
   text-align: center;
-  max-width: 480px;
+  z-index: 10;
+  max-width: 500px;
   width: 90%;
 }
 
 .logo {
   background: #FF4D8D;
   color: white;
-  display: inline-block;
-  padding: 16px 50px;
+  padding: 18px 60px;
   border-radius: 16px;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   font-weight: bold;
+  display: inline-block;
   margin-bottom: 30px;
 }
 
-h1 {
-  font-size: 1.7rem;
-  color: #333;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  color: #555;
-  font-size: 1.2rem;
-  margin-bottom: 50px;
-}
+h1 { font-size: 1.6rem; color: #333; margin-bottom: 10px; }
+.tagline { color: #555; font-size: 1.3rem; margin-bottom: 50px; }
 
 #connectBtn {
   background: #FF4D8D;
   color: white;
   border: none;
-  padding: 18px 60px;
+  padding: 18px 70px;
   font-size: 1.5rem;
   border-radius: 16px;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(255,77,141,0.4);
+  box-shadow: 0 12px 30px rgba(255,77,141,0.4);
   transition: 0.3s;
 }
+#connectBtn:hover { background: #ff1a75; transform: translateY(-5px); }
 
-#connectBtn:hover {
-  background: #ff3366;
-  transform: translateY(-4px);
-}
-
-.help {
+.footer {
   margin-top: 50px;
   color: #666;
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
