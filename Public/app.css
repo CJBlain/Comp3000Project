@@ -19,11 +19,40 @@ body {
   background: #00D4FF;
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
-.top-left    { top: 0; left: 0; background: #00D4FF; }
-.top-right   { top: 0; right: 0; background: #FFD700; transform: rotate(90deg); }
-.bottom-left { bottom: 0; left: 0; background: #FFD700; transform: rotate(-90deg); }
-.bottom-right{ bottom: 0; right: 0; background: #00D4FF; transform: rotate(180deg); }
 
+.top-right   { top: 0; right: 0; background: #00D4FF; transform: rotate(90deg); }
+.bottom-left { bottom: 0; left: 0; background: #00D4FF; transform: rotate(-90deg); }
+
+
+.corner-l {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;    
+  height: 120px;
+}
+
+.corner-l::before,
+.corner-l::after {
+  content: "";
+  position: absolute;
+  background: #00d7ff; 
+}
+
+
+.corner-l::before {
+  width: 75px;       
+  height: 375%;
+  left: 0;
+  top: 0;
+}
+
+.corner-l::after {
+  width: 170%;
+  height: 75px;     
+  left: 0;
+  top: 0;
+}
 
 .card {
   background: white;
@@ -37,7 +66,7 @@ body {
 }
 
 .logo {
-  background: #FF4D8D;
+  background: #f75990;
   color: white;
   padding: 18px 60px;
   border-radius: 16px;
@@ -51,7 +80,7 @@ h1 { font-size: 1.6rem; color: #333; margin-bottom: 10px; }
 .tagline { color: #555; font-size: 1.3rem; margin-bottom: 50px; }
 
 #connectBtn {
-  background: #FF4D8D;
+  background: #f75990;
   color: white;
   border: none;
   padding: 18px 70px;
@@ -61,7 +90,7 @@ h1 { font-size: 1.6rem; color: #333; margin-bottom: 10px; }
   box-shadow: 0 12px 30px rgba(255,77,141,0.4);
   transition: 0.3s;
 }
-#connectBtn:hover { background: #ff1a75; transform: translateY(-5px); }
+#connectBtn:hover { background: #f75990; transform: translateY(-5px); }
 
 .footer {
   margin-top: 50px;
