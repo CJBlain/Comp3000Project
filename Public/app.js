@@ -1,4 +1,33 @@
-// Temporary placeholder – real wallet connection comes after backend
-document.getElementById("connectBtn").addEventListener("click", () => {
-  alert("Wallet connection will be activated once the blockchain backend is deployed");
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const loginButton = document.getElementById('login-btn');
+    const helpButton = document.getElementById('help-btn');
+    const messageDisplay = document.getElementById('message');
+
+   
+    function showTemporaryMessage(messageText) {
+        
+        messageDisplay.textContent = messageText;
+        
+        
+        setTimeout(() => {
+            messageDisplay.textContent = ''; 
+        }, 1000); 
+    }
+
+   
+    loginButton.addEventListener('click', (event) => {
+        event.preventDefault(); 
+        
+   
+        showTemporaryMessage('Backend in development');
+    });
+
+
+    helpButton.addEventListener('click', (event) => {
+        event.preventDefault();
+      
+        showTemporaryMessage('Contact support@sentinelchain.com');
+    });
 });
