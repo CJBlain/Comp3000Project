@@ -1,4 +1,8 @@
 body {
+    background-image: url('Background.png');
+    background-size: cover; 
+    background-attachment: fixed; 
+    background-position: center center;
     background-color: #0044FF; 
     display: flex;
     justify-content: center;
@@ -10,7 +14,6 @@ body {
 }
 
 .dashboard-container {
-    background-color: #0033CC; 
     width: 90%; 
     height: 90%;
     position: relative;
