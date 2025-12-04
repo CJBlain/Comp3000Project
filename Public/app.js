@@ -1,32 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const loginButton = document.getElementById('login-btn');
     const helpButton = document.getElementById('help-btn');
     const messageDisplay = document.getElementById('message');
+    const backButton = document.getElementById('back-btn'); 
 
-    
     function showTemporaryMessage(messageText) {
-        
+        if (!messageDisplay) return;
         messageDisplay.textContent = messageText;
-        
         setTimeout(() => {
-            messageDisplay.textContent = ''; 
-        }, 1000); 
+            messageDisplay.textContent = '';
+        }, 1000);
     }
 
     
-    loginButton.addEventListener('click', (event) => {
-        event.preventDefault(); 
-        
-        // **PROTOTYPE NAVIGATION:** Immediately redirects to the dashboard.
-        window.location.href = 'dashboard.html'; 
-    });
+    if (loginButton) {
+        loginButton.addEventListener('click', (event) => {
+            event.preventDefault();
+    
+            window.location.href = 'dashboard.html';
+        });
+    }
+
+    if (helpButton) {
+        helpButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            showTemporaryMessage('Contact support@sentinelchain.com');
+        });
+    }
+
+    if (backButton) {
+        backButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.location.href = 'index.html';
+        });
 
 
-    helpButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        
-        // Help button still shows the contact message
-        showTemporaryMessage('Contact support@sentinelchain.com');
-    });
+        window.onpopstate = function () {
+            window.location.href = 'index.html';
+        };
+
+    
+        history.replaceState(null, '', location.href);
+    }
+
 });
