@@ -11,3 +11,6 @@ module.exports = {
     }
   }
 };
+
+//npx hardhat test 
+//run that to test the hardhat functions 
