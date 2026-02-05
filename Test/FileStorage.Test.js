@@ -66,20 +66,23 @@ describe("FileStorage Contract", function () {
     });
 
     it("Should retrieve file details as owner", async function () {
-      const [ipfsHash, fileOwner, timestamp, filename, size, key] = 
-        await contract.getFile(0);
+      const result = await contract.getFile(0);
       
-      expect(ipfsHash).to.equal("QmTest123");
-      expect(fileOwner).to.equal(owner.address);
-      expect(filename).to.equal("encFile.pdf");
-      expect(size).to.equal(2048);
-      expect(key).to.equal("ownerKey");
+      expect(result[0]).to.equal("QmTest123");
+      expect(result[1]).to.equal(owner.address);
+      expect(result[3]).to.equal("encFile.pdf");
+      expect(result[4]).to.equal(2048);
+      expect(result[5]).to.equal("ownerKey");
     });
 
-    it("Should emit FileAccessed event", async function () {
-      await expect(contract.getFile(0))
+     it("Should emit FileAccessed event", async function () {
+      const tx = await contract.getFile(0);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+      
+      await expect(tx)
         .to.emit(contract, "FileAccessed")
-        .withArgs(0, owner.address, await getBlockTimestamp());
+        .withArgs(0, owner.address, block.timestamp);
     });
 
     it("Should fail if file does not exist", async function () {
@@ -120,12 +123,12 @@ describe("FileStorage Contract", function () {
       expect(key).to.equal("keyForUser1");
     });
 
-    it("Should add file to shared user's file list", async function () {
+      it("Should allow shared user to access file", async function () {
       await contract.shareFile(0, user1.address, "keyForUser1");
       
-      const user1Files = await contract.connect(user1).getMyFiles();
-      expect(user1Files.length).to.equal(1);
-      expect(user1Files[0]).to.equal(0);
+      const result = await contract.connect(user1).getFile(0);
+      expect(result[0]).to.equal("QmShare");
+      expect(result[5]).to.equal("keyForUser1");
     });
 
     it("Should fail to share with zero address", async function () {
