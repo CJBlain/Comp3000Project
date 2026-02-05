@@ -24,9 +24,12 @@ describe("FileStorage Contract", function () {
         "encryptedKey123"
       );
       
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+      
       await expect(tx)
         .to.emit(contract, "FileUploaded")
-        .withArgs(0, owner.address, "QmTest123", await getBlockTimestamp(), 1024);
+        .withArgs(0, owner.address, "QmTest123", block.timestamp, 1024);
       
       const files = await contract.getMyFiles();
       expect(files.length).to.equal(1);
@@ -66,7 +69,7 @@ describe("FileStorage Contract", function () {
     });
 
     it("Should retrieve file details as owner", async function () {
-      const result = await contract.getFile(0);
+      const result = await contract.getFile.staticCall(0);
       
       expect(result[0]).to.equal("QmTest123");
       expect(result[1]).to.equal(owner.address);
@@ -75,7 +78,7 @@ describe("FileStorage Contract", function () {
       expect(result[5]).to.equal("ownerKey");
     });
 
-     it("Should emit FileAccessed event", async function () {
+    it("Should emit FileAccessed event", async function () {
       const tx = await contract.getFile(0);
       const receipt = await tx.wait();
       const block = await ethers.provider.getBlock(receipt.blockNumber);
@@ -109,26 +112,28 @@ describe("FileStorage Contract", function () {
 
     it("Should share file successfully", async function () {
       const tx = await contract.shareFile(0, user1.address, "keyForUser1");
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
       
       await expect(tx)
         .to.emit(contract, "FileShared")
-        .withArgs(0, owner.address, user1.address, await getBlockTimestamp());
+        .withArgs(0, owner.address, user1.address, block.timestamp);
     });
 
     it("Should allow shared user to access file", async function () {
       await contract.shareFile(0, user1.address, "keyForUser1");
       
-      const [ipfsHash, , , , , key] = await contract.connect(user1).getFile(0);
-      expect(ipfsHash).to.equal("QmShare");
-      expect(key).to.equal("keyForUser1");
-    });
-
-      it("Should allow shared user to access file", async function () {
-      await contract.shareFile(0, user1.address, "keyForUser1");
-      
-      const result = await contract.connect(user1).getFile(0);
+      const result = await contract.connect(user1).getFile.staticCall(0);
       expect(result[0]).to.equal("QmShare");
       expect(result[5]).to.equal("keyForUser1");
+    });
+
+    it("Should add file to shared user's file list", async function () {
+      await contract.shareFile(0, user1.address, "keyForUser1");
+      
+      const user1Files = await contract.connect(user1).getMyFiles();
+      expect(user1Files.length).to.equal(1);
+      expect(user1Files[0]).to.equal(0);
     });
 
     it("Should fail to share with zero address", async function () {
@@ -160,10 +165,10 @@ describe("FileStorage Contract", function () {
       await contract.shareFile(0, user1.address, "keyForUser1");
       await contract.shareFile(0, user2.address, "keyForUser2");
       
-      const [users, , ] = await contract.getSharedUsers(0);
-      expect(users.length).to.equal(2);
-      expect(users[0]).to.equal(user1.address);
-      expect(users[1]).to.equal(user2.address);
+      const result = await contract.getSharedUsers(0);
+      expect(result[0].length).to.equal(2);
+      expect(result[0][0]).to.equal(user1.address);
+      expect(result[0][1]).to.equal(user2.address);
     });
   });
 
@@ -175,10 +180,12 @@ describe("FileStorage Contract", function () {
 
     it("Should revoke access successfully", async function () {
       const tx = await contract.revokeAccess(0, user1.address);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
       
       await expect(tx)
         .to.emit(contract, "AccessRevoked")
-        .withArgs(0, owner.address, user1.address, await getBlockTimestamp());
+        .withArgs(0, owner.address, user1.address, block.timestamp);
     });
 
     it("Should prevent access after revocation", async function () {
@@ -203,9 +210,9 @@ describe("FileStorage Contract", function () {
     it("Should show revocation in shared users list", async function () {
       await contract.revokeAccess(0, user1.address);
       
-      const [users, , revoked] = await contract.getSharedUsers(0);
-      expect(users[0]).to.equal(user1.address);
-      expect(revoked[0]).to.equal(true);
+      const result = await contract.getSharedUsers(0);
+      expect(result[0][0]).to.equal(user1.address);
+      expect(result[2][0]).to.equal(true);
     });
   });
 
@@ -216,10 +223,12 @@ describe("FileStorage Contract", function () {
 
     it("Should delete file successfully", async function () {
       const tx = await contract.deleteFile(0);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
       
       await expect(tx)
         .to.emit(contract, "FileDeleted")
-        .withArgs(0, owner.address, await getBlockTimestamp());
+        .withArgs(0, owner.address, block.timestamp);
     });
 
     it("Should not show deleted files in user's list", async function () {
@@ -258,13 +267,13 @@ describe("FileStorage Contract", function () {
     });
 
     it("Should return all shared users", async function () {
-      const [users, timestamps, revoked] = await contract.getSharedUsers(0);
+      const result = await contract.getSharedUsers(0);
       
-      expect(users.length).to.equal(2);
-      expect(users[0]).to.equal(user1.address);
-      expect(users[1]).to.equal(user2.address);
-      expect(revoked[0]).to.equal(false);
-      expect(revoked[1]).to.equal(false);
+      expect(result[0].length).to.equal(2);
+      expect(result[0][0]).to.equal(user1.address);
+      expect(result[0][1]).to.equal(user2.address);
+      expect(result[2][0]).to.equal(false);
+      expect(result[2][1]).to.equal(false);
     });
 
     it("Should fail if not owner", async function () {
@@ -309,9 +318,4 @@ describe("FileStorage Contract", function () {
       expect(user1Files.length).to.equal(1);
     });
   });
-
-  async function getBlockTimestamp() {
-    const block = await ethers.provider.getBlock('latest');
-    return block.timestamp;
-  }
 });
