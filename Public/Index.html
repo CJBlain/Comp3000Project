@@ -18,16 +18,16 @@
         </div>
         
         <button id="login-btn" class="action-btn">Connect MetaMask</button>
-        <button id="disconnect-btn" class="action-btn" style="display: none;">Disconnect</button>
+        <button id="disconnect-btn" class="action-btn">Disconnect</button>
         <button id="help-btn" class="action-btn">Help</button>
         
         <p id="message"></p>
     </div>
 
-    <!-- Ethers.js for blockchain connection -->
+    
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
 
-    <!-- Our modules -->
+    
     <script src="js/config.js"></script>
     <script src="js/wallet.js"></script>
     
@@ -69,7 +69,6 @@
                     walletDisplay.style.display = 'block';
                     
                     loginButton.textContent = 'Connected!';
-                    disconnectButton.style.display = 'inline-block';
                     showMessage('Wallet connected successfully!');
                     
                     setTimeout(() => {
@@ -110,11 +109,44 @@
             }
 
             if (disconnectButton) {
-                disconnectButton.addEventListener('click', (event) => {
+                disconnectButton.addEventListener('click', async (event) => {
                     event.preventDefault();
-                    if (confirm('Disconnect wallet? You can reconnect anytime.')) {
-                        walletManager.disconnect();
-                        window.location.reload();
+                    
+                    
+                    let hasConnection = walletManager.isConnected();
+                    
+                    if (!hasConnection && window.ethereum) {
+                        try {
+                            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                            hasConnection = accounts && accounts.length > 0;
+                        } catch (error) {
+                            console.error('Failed to check accounts:', error);
+                        }
+                    }
+                    
+                    if (!hasConnection) {
+                        showMessage('No wallet connected', true);
+                        return;
+                    }
+                    
+                    if (confirm('Disconnect wallet? MetaMask will ask permission next time you connect.')) {
+                        try {
+                           
+                            await window.ethereum.request({
+                                method: "wallet_revokePermissions",
+                                params: [{
+                                    eth_accounts: {}
+                                }]
+                            });
+                            walletManager.disconnect();
+                            showMessage('Disconnected! MetaMask will ask permission next time.');
+                            setTimeout(() => window.location.reload(), 1500);
+                        } catch (error) {
+                            console.error('Disconnect failed:', error);
+                        
+                            walletManager.disconnect();
+                            window.location.reload();
+                        }
                     }
                 });
             }
@@ -124,7 +156,6 @@
                 walletAddress.textContent = shortAddress;
                 walletDisplay.style.display = 'block';
                 loginButton.textContent = 'Go to Dashboard';
-                disconnectButton.style.display = 'inline-block';
                 
                 loginButton.addEventListener('click', (event) => {
                     event.preventDefault();
