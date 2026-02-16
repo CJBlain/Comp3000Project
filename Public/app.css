@@ -89,6 +89,15 @@ body {
     margin-top: 20px;
 }
 
+#disconnect-btn {
+    width: 120px;
+    margin-top: 20px;
+    background-color: #FF3366;
+}
+
+#disconnect-btn:hover {
+    background-color: #CC0033;
+}
 
 #message {
     color: black; 

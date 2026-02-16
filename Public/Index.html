@@ -18,21 +18,23 @@
         </div>
         
         <button id="login-btn" class="action-btn">Connect MetaMask</button>
+        <button id="disconnect-btn" class="action-btn" style="display: none;">Disconnect</button>
         <button id="help-btn" class="action-btn">Help</button>
         
         <p id="message"></p>
     </div>
 
-  
+    <!-- Ethers.js for blockchain connection -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
 
-    
+    <!-- Our modules -->
     <script src="js/config.js"></script>
     <script src="js/wallet.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const loginButton = document.getElementById('login-btn');
+            const disconnectButton = document.getElementById('disconnect-btn');
             const helpButton = document.getElementById('help-btn');
             const messageDisplay = document.getElementById('message');
             const walletDisplay = document.getElementById('wallet-display');
@@ -67,6 +69,7 @@
                     walletDisplay.style.display = 'block';
                     
                     loginButton.textContent = 'Connected!';
+                    disconnectButton.style.display = 'inline-block';
                     showMessage('Wallet connected successfully!');
                     
                     setTimeout(() => {
@@ -102,7 +105,17 @@
             if (helpButton) {
                 helpButton.addEventListener('click', (event) => {
                     event.preventDefault();
-                    showMessage('Click "Connect MetaMask" to connect your crypto wallet. Make sure you have MetaMask installed and are on Polygon Amoy testnet. Press HELP Button for Futher Assistance');
+                    showMessage('Click "Connect MetaMask" to connect your crypto wallet. Make sure you have MetaMask installed and are on Polygon Amoy testnet.');
+                });
+            }
+
+            if (disconnectButton) {
+                disconnectButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (confirm('Disconnect wallet? You can reconnect anytime.')) {
+                        walletManager.disconnect();
+                        window.location.reload();
+                    }
                 });
             }
 
@@ -111,6 +124,7 @@
                 walletAddress.textContent = shortAddress;
                 walletDisplay.style.display = 'block';
                 loginButton.textContent = 'Go to Dashboard';
+                disconnectButton.style.display = 'inline-block';
                 
                 loginButton.addEventListener('click', (event) => {
                     event.preventDefault();
