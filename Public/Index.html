@@ -13,17 +13,111 @@
             SentinelChain
         </div>
         
-        <input type="text" id="Username" placeholder="Enter Your Wallet Key" class="input-field">
-        <button id="login-btn" class="action-btn">Login</button>
+        <div id="wallet-display" class="input-field" style="display: none;">
+            Connected: <span id="wallet-address"></span>
+        </div>
+        
+        <button id="login-btn" class="action-btn">Connect MetaMask</button>
         <button id="help-btn" class="action-btn">Help</button>
         
         <p id="message"></p>
     </div>
 
-   
+    <!-- Ethers.js for blockchain connection -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
 
-    <script src="app.js"></script>
+    <!-- Our modules -->
+    <script src="js/config.js"></script>
+    <script src="js/wallet.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loginButton = document.getElementById('login-btn');
+            const helpButton = document.getElementById('help-btn');
+            const messageDisplay = document.getElementById('message');
+            const walletDisplay = document.getElementById('wallet-display');
+            const walletAddress = document.getElementById('wallet-address');
+
+            function showMessage(messageText, isError = false) {
+                if (!messageDisplay) return;
+                messageDisplay.textContent = messageText;
+                messageDisplay.style.color = isError ? '#FF0000' : 'black';
+                
+                setTimeout(() => {
+                    messageDisplay.textContent = '';
+                }, 3000);
+            }
+
+            async function connectWallet() {
+                try {
+                    loginButton.disabled = true;
+                    loginButton.textContent = 'Connecting...';
+                    
+                    if (typeof window.ethereum === 'undefined') {
+                        showMessage('MetaMask is not installed. Please install MetaMask extension.', true);
+                        loginButton.textContent = 'Connect MetaMask';
+                        loginButton.disabled = false;
+                        return;
+                    }
+
+                    const account = await walletManager.connect();
+                    
+                    const shortAddress = walletManager.getShortAddress();
+                    walletAddress.textContent = shortAddress;
+                    walletDisplay.style.display = 'block';
+                    
+                    loginButton.textContent = 'Connected!';
+                    showMessage('Wallet connected successfully!');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('Connection failed:', error);
+                    
+                    let errorMessage = 'Failed to connect wallet. ';
+                    
+                    if (error.code === 4001) {
+                        errorMessage += 'You rejected the connection.';
+                    } else if (error.message.includes('switch to Polygon Amoy')) {
+                        errorMessage += 'Please switch to Polygon Amoy testnet in MetaMask.';
+                    } else {
+                        errorMessage += error.message || 'Please try again.';
+                    }
+                    
+                    showMessage(errorMessage, true);
+                    loginButton.textContent = 'Connect MetaMask';
+                    loginButton.disabled = false;
+                }
+            }
+
+            if (loginButton) {
+                loginButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    connectWallet();
+                });
+            }
+
+            if (helpButton) {
+                helpButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    showMessage('Click "Connect MetaMask" to connect your crypto wallet. Make sure you have MetaMask installed and are on Polygon Amoy testnet. Press HELP Button for Futher Assistance');
+                });
+            }
+
+            if (walletManager.isConnected()) {
+                const shortAddress = walletManager.getShortAddress();
+                walletAddress.textContent = shortAddress;
+                walletDisplay.style.display = 'block';
+                loginButton.textContent = 'Go to Dashboard';
+                
+                loginButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.location.href = 'dashboard.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
-
-
