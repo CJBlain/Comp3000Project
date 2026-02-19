@@ -10,29 +10,135 @@
 <body>
     <div class="dashboard-container">
         
-       
         <div class="nav-bar">
             <div class="nav-logo">SentinelChain</div>
             <div class="nav-links">
+                <button id="wallet-btn" class="nav-btn">Connecting...</button>
                 <button id="back-btn" class="nav-btn">Back</button>
-                <button class="nav-btn">Help</button>
-                <button class="nav-btn">Report</button>
-                <button class="nav-btn">Credentials</button>
+                <button id="help-btn" class="nav-btn">Help</button>
+                <button id="report-btn" class="nav-btn">Report</button>
+                <button id="credentials-btn" class="nav-btn">Credentials</button>
             </div>
         </div>
 
-        
         <div class="main-actions">
             <button class="action-btn-large" id="download-btn">Download</button>
             <button class="action-btn-large" id="upload-btn">Upload</button>
             <button class="action-btn-large" id="transfer-btn">Transfer</button>
         </div>
 
-        
-    <script src="app.js"></script>
-
     </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+
+    
+    <script src="js/config.js"></script>
+    <script src="js/wallet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const walletBtn = document.getElementById('wallet-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            const transferBtn = document.getElementById('transfer-btn');
+            const backBtn = document.getElementById('back-btn');
+            const helpBtn = document.getElementById('help-btn');
+            const reportBtn = document.getElementById('report-btn');
+            const credentialsBtn = document.getElementById('credentials-btn');
+
+           
+            async function checkAndReconnect() {
+                try {
+                    if (!window.ethereum) {
+                        alert('MetaMask not found. Please install MetaMask.');
+                        window.location.href = 'index.html';
+                        return false;
+                    }
+
+                 
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    
+                    if (accounts && accounts.length > 0) {
+                        await walletManager.connect();
+                        return true;
+                    } else {
+                        alert('Please connect your wallet first');
+                        window.location.href = 'index.html';
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Connection check failed:', error);
+                    alert('Failed to connect wallet. Please try again.');
+                    window.location.href = 'index.html';
+                    return false;
+                }
+            }
+
+            
+            const connected = await checkAndReconnect();
+            if (!connected) return;
+
+            
+            const shortAddress = walletManager.getShortAddress();
+            walletBtn.textContent = shortAddress;
+
+          
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', () => {
+                    window.location.href = 'download.html';
+                });
+            }
+
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', () => {
+                    window.location.href = 'upload.html';
+                });
+            }
+
+            if (transferBtn) {
+                transferBtn.addEventListener('click', () => {
+                    window.location.href = 'transfer.html';
+                });
+            }
+
+          
+            if (walletBtn) {
+                walletBtn.addEventListener('click', () => {
+                    const fullAddress = walletManager.getAccount();
+                    alert(`Your wallet address:\n${fullAddress}\n\nCopied to clipboard!`);
+                    navigator.clipboard.writeText(fullAddress);
+                });
+            }
+
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+
+            if (helpBtn) {
+                helpBtn.addEventListener('click', () => {
+                    alert('SentinelChain Help\n\n' +
+                          'Upload: Encrypt and upload files\n' +
+                          'Download: View and download your files\n' +
+                          'Transfer: Share files with others\n\n' +
+                          'Contact: support@sentinelchain.com');
+                });
+            }
+
+            if (reportBtn) {
+                reportBtn.addEventListener('click', () => {
+                    alert('Report feature coming soon!');
+                });
+            }
+
+            if (credentialsBtn) {
+                credentialsBtn.addEventListener('click', () => {
+                    alert('Credentials:\n\nWallet: ' + walletManager.getAccount() + '\nNetwork: Polygon Amoy Testnet');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
-
-
