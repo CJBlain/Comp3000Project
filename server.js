@@ -96,7 +96,7 @@ app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗
 ║   SentinelChain Backend Server         ║
-║   Running on http://localhost:${PORT}   ║
+║   Running on http://localhost:${PORT}  ║
 ║                                        ║
 ║   API Endpoints:                       ║
 ║   GET  /api/health  - Health check     ║

@@ -1,49 +1,47 @@
+
+
 class IPFSManager {
-  constructor(apiKey, apiSecret) {
-    this.apiKey = apiKey;
-    this.apiSecret = apiSecret;
-    this.pinataBaseUrl = 'https://api.pinata.cloud';
+  constructor() {
+    this.backendUrl = 'http://localhost:3001';
     this.ipfsGateway = 'https://gateway.pinata.cloud/ipfs/';
   }
 
   async uploadFile(file) {
     try {
+      
       const formData = new FormData();
       formData.append('file', file);
 
-      const metadata = JSON.stringify({
-        name: file.name || 'encrypted-file'
-      });
-      formData.append('pinataMetadata', metadata);
-
-      const options = JSON.stringify({
-        cidVersion: 0
-      });
-      formData.append('pinataOptions', options);
-
-      const response = await fetch(`${this.pinataBaseUrl}/pinning/pinFileToIPFS`, {
+      
+      const response = await fetch(`${this.backendUrl}/api/upload`, {
         method: 'POST',
-        headers: {
-          'pinata_api_key': this.apiKey,
-          'pinata_secret_api_key': this.apiSecret
-        },
         body: formData
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`Pinata upload failed: ${errorData.error || response.statusText}`);
+        throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
       }
 
       const data = await response.json();
       
+      if (!data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
       return {
-        ipfsHash: data.IpfsHash,
-        size: data.PinSize,
-        timestamp: data.Timestamp
+        ipfsHash: data.ipfsHash,
+        size: data.size,
+        timestamp: data.timestamp
       };
     } catch (error) {
       console.error('IPFS upload failed:', error);
+      
+      
+      if (error.message.includes('Failed to fetch')) {
+        throw new Error('Backend server not running. Please start the backend server first.');
+      }
+      
       throw new Error('Failed to upload to IPFS: ' + error.message);
     }
   }
@@ -73,31 +71,24 @@ class IPFSManager {
 
   async testConnection() {
     try {
-      const response = await fetch(`${this.pinataBaseUrl}/data/testAuthentication`, {
-        method: 'GET',
-        headers: {
-          'pinata_api_key': this.apiKey,
-          'pinata_secret_api_key': this.apiSecret
-        }
-      });
-
+      const response = await fetch(`${this.backendUrl}/api/health`);
+      
       if (!response.ok) {
-        throw new Error('Authentication failed');
+        throw new Error('Backend server not responding');
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Pinata connection test failed:', error);
-      throw error;
+      console.error('Backend connection test failed:', error);
+      throw new Error('Cannot connect to backend server. Make sure it is running on port 3001.');
     }
   }
 }
 
+
+const ipfsManager = new IPFSManager();
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { IPFSManager };
+  module.exports = { IPFSManager, ipfsManager };
 }
-
-
-
-
