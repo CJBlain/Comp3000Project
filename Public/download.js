@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return {
                         id: fileId,
                         filename: decryptedFilename,
+                        encryptedFilename: fileData.encryptedFilename,
                         size: fileData.fileSize,
                         timestamp: fileData.timestamp,
                         owner: fileData.owner,
@@ -174,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const downloadBtn = document.createElement('button');
         downloadBtn.className = 'file-action-btn download';
         downloadBtn.textContent = 'Download';
-        downloadBtn.addEventListener('click', () => downloadFile(file));
+        downloadBtn.addEventListener('click', () => downloadFile(file, downloadBtn));
 
         fileActions.appendChild(downloadBtn);
 
@@ -199,9 +200,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return fileItem;
     }
 
-    async function downloadFile(file) {
+    async function downloadFile(file, downloadBtn) {
         try {
-            const downloadBtn = event.target;
             downloadBtn.disabled = true;
             downloadBtn.textContent = 'Downloading...';
 
@@ -209,11 +209,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const decryptedResult = await encryptionManager.decryptFile(
                 encryptedBlob,
-                file.filename,
-                walletManager.getAccount()
+                walletManager.getAccount(),
+                file.encryptedFilename
             );
 
-            const url = window.URL.createObjectURL(decryptedResult.blob);
+            const url = window.URL.createObjectURL(decryptedResult.decryptedFile);
             const a = document.createElement('a');
             a.href = url;
             a.download = decryptedResult.filename;
@@ -228,8 +228,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Download failed:', error);
             alert('Download failed: ' + error.message);
-            event.target.disabled = false;
-            event.target.textContent = 'Download';
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = 'Download';
         }
     }
 

@@ -32,7 +32,8 @@ class BlockchainManager {
         ipfsHash,
         encryptedFilename,
         fileSize,
-        encryptedKey
+        encryptedKey,
+        { gasPrice: ethers.parseUnits('30', 'gwei') }
       );
 
       const receipt = await tx.wait();
@@ -100,7 +101,8 @@ class BlockchainManager {
       const tx = await this.contract.shareFile(
         fileId,
         recipientAddress,
-        encryptedKeyForRecipient
+        encryptedKeyForRecipient,
+        { gasPrice: ethers.parseUnits('30', 'gwei') }
       );
 
       const receipt = await tx.wait();
@@ -121,7 +123,11 @@ class BlockchainManager {
         throw new Error('Contract not initialized');
       }
 
-      const tx = await this.contract.revokeAccess(fileId, userAddress);
+      const tx = await this.contract.revokeAccess(
+        fileId,
+        userAddress,
+        { gasPrice: ethers.parseUnits('30', 'gwei') }
+      );
       const receipt = await tx.wait();
 
       return {
@@ -140,7 +146,10 @@ class BlockchainManager {
         throw new Error('Contract not initialized');
       }
 
-      const tx = await this.contract.deleteFile(fileId);
+      const tx = await this.contract.deleteFile(
+        fileId,
+        { gasPrice: ethers.parseUnits('30', 'gwei') }
+      );
       const receipt = await tx.wait();
 
       return {
