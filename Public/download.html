@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinelChain - Download Files</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="download.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <div class="nav-bar">
+            <div class="nav-logo">SentinelChain</div>
+            <div class="nav-links">
+                <button id="wallet-btn" class="nav-btn">Connecting...</button>
+                <button id="back-btn" class="nav-btn">Back</button>
+                <button id="help-btn" class="nav-btn">Help</button>
+            </div>
+        </div>
+
+        <div class="download-container">
+            <div class="download-title">Your Files</div>
+
+            <div class="file-tabs">
+                <button class="tab-btn active" data-tab="my-files">My Files</button>
+                <button class="tab-btn" data-tab="shared-files">Shared With Me</button>
+            </div>
+
+            <div id="loading-message" class="loading">
+                Loading your files...
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <div id="files-list" class="files-list">
+            </div>
+
+            <div id="no-files-message" class="no-files">
+                <p>No files found.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/encryption.js"></script>
+    <script src="js/ipfs.js"></script>
+    <script src="js/blockchain.js"></script>
+    <script src="download.js"></script>
+</body>
+</html>
